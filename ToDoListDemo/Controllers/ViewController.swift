@@ -6,28 +6,33 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UITableViewController, UISearchBarDelegate {
     
         var itemArray = [Item]()
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         
-       let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+//       let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
-      let newItem = Item()
-        newItem.title = "Apple"
-        itemArray.append(newItem)
         
-    let newItem2 = Item()
-        newItem2.title = "Mango"
-        itemArray.append(newItem2)
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+//      let newItem = Item()
+//        newItem.title = "Apple"
+//        itemArray.append(newItem)
+//
+//    let newItem2 = Item()
+//        newItem2.title = "Mango"
+//        itemArray.append(newItem2)
+//
+//    let newItem3 = Item()
+//        newItem3.title = "Coconut"
+//        itemArray.append(newItem3)
         
-    let newItem3 = Item()
-        newItem3.title = "Coconut"
-        itemArray.append(newItem3)
-        
-        loadItems()
+//        loadItems()
         
 //        if let items = defaults.array(forKey: "ToDoListArray") as? [Item] {
 //            itemArray = items
@@ -64,19 +69,19 @@ class ViewController: UITableViewController, UISearchBarDelegate {
         
            
         
-            let add = UIAlertAction(title: "Add", style: .default) {
+        let add = UIAlertAction(title: "Add", style: .default) { [self]
                     (action) in
-            let newItem = Item()
+           
+                let newItem = Item(context: self.context)
+                newItem.done = false
                 newItem.title = textField.text!
                 self.itemArray.append(newItem)
                 
-            let encoder = PropertyListEncoder()
-                
-                do {
-                    let data = try encoder.encode(self.itemArray)
-                    try data.write(to: self.dataFilePath!)
+            
+            do {
+                    try self.context.save()
                 } catch {
-                    print("Error Encoding Item Array \(error)")
+                    print("Error \(error)")
                 }
                 
                 self.tableView.reloadData()
@@ -96,7 +101,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
         }
     
     
-        override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
             
             let edit = UIContextualAction(style: .normal, title: "Update") {
                 _, _, _ in
@@ -136,21 +141,16 @@ class ViewController: UITableViewController, UISearchBarDelegate {
                     return swipeCofiguration
             }
     
-    func loadItems() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-            itemArray = try decoder.decode([Item].self, from: data)
-        } catch {
-            print("Error Decoding Item Array \(error)")
-        }
-      }
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-    }
-    
+//    func loadItems() {
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//            do {
+//
+//        } catch {
+//            print("Error Decoding Item Array \(error)")
+//        }
+//      }
+//    }
 }
 
     
