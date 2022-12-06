@@ -78,6 +78,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FA7149A3293E33B000DCE2E0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				FA7FDAD92934AEA5000A6290 /* LaunchScreen.storyboard */,
+				FA7FDAD02934AE9F000A6290 /* SceneDelegate.swift */,
+				FA7FDACE2934AE9F000A6290 /* AppDelegate.swift */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		FA7FDAC22934AE9F000A6290 = {
 			isa = PBXGroup;
 			children = (
@@ -101,13 +111,11 @@
 		FA7FDACD2934AE9F000A6290 /* ToDoListDemo */ = {
 			isa = PBXGroup;
 			children = (
-				FA7FDACE2934AE9F000A6290 /* AppDelegate.swift */,
-				FA7FDAD02934AE9F000A6290 /* SceneDelegate.swift */,
+				FA7149A3293E33B000DCE2E0 /* Supporting Files */,
 				FA8118AC2938C85800988792 /* Controllers */,
-				FA8118AB2938C81300988792 /* Data Model */,
+				FA8118AB2938C81300988792 /*  Model */,
 				FA8118AD2938C87C00988792 /* Views */,
 				FA7FDAD72934AEA5000A6290 /* Assets.xcassets */,
-				FA7FDAD92934AEA5000A6290 /* LaunchScreen.storyboard */,
 				FA7FDADC2934AEA5000A6290 /* Info.plist */,
 			);
 			path = ToDoListDemo;
@@ -130,12 +138,12 @@
 			path = ToDoListDemoUITests;
 			sourceTree = "<group>";
 		};
-		FA8118AB2938C81300988792 /* Data Model */ = {
+		FA8118AB2938C81300988792 /*  Model */ = {
 			isa = PBXGroup;
 			children = (
 				FA822B7C293CD2F900609D22 /* DataModel.xcdatamodeld */,
 			);
-			path = "Data Model";
+			path = " Model";
 			sourceTree = "<group>";
 		};
 		FA8118AC2938C85800988792 /* Controllers */ = {

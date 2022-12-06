@@ -8,35 +8,18 @@
 import UIKit
 import CoreData
 
-class ViewController: UITableViewController, UISearchBarDelegate {
+class ViewController: UITableViewController {
     
-        var itemArray = [Item]()
+    var itemArray = [Item]()
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         
-//       let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-//      let newItem = Item()
-//        newItem.title = "Apple"
-//        itemArray.append(newItem)
-//
-//    let newItem2 = Item()
-//        newItem2.title = "Mango"
-//        itemArray.append(newItem2)
-//
-//    let newItem3 = Item()
-//        newItem3.title = "Coconut"
-//        itemArray.append(newItem3)
-        
-//        loadItems()
-        
-//        if let items = defaults.array(forKey: "ToDoListArray") as? [Item] {
-//            itemArray = items
-//        }
+
+        loadItems()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -56,6 +39,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
 
             itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+            save()
             tableView.reloadData()
         
             tableView.deselectRow(at: indexPath, animated: true)
@@ -68,24 +52,17 @@ class ViewController: UITableViewController, UISearchBarDelegate {
             let alert = UIAlertController(title: "Add New Itom", message: "", preferredStyle: .alert)
         
            
-        
-        let add = UIAlertAction(title: "Add", style: .default) { [self]
+            let add = UIAlertAction(title: "Add", style: .default) { [self]
                     (action) in
            
                 let newItem = Item(context: self.context)
                 newItem.done = false
                 newItem.title = textField.text!
                 self.itemArray.append(newItem)
-                
-            
-            do {
-                    try self.context.save()
-                } catch {
-                    print("Error \(error)")
-                }
-                
+                save()
                 self.tableView.reloadData()
-            }
+                
+           }
         
             let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
@@ -107,13 +84,21 @@ class ViewController: UITableViewController, UISearchBarDelegate {
                 _, _, _ in
             var textField = UITextField()
                 
-            let alert = UIAlertController(title: "Update Itom", message: "", preferredStyle: .alert)
-            let update = UIAlertAction(title: "Update", style: .default){
+                let alert = UIAlertController(title: "Update Itom", message: "", preferredStyle: .alert)
+                
+                let update = UIAlertAction(title: "Update", style: .default){ [self]
                     (action) in
-                    let newItem = Item()
-                    newItem.title = textField.text!
+                    let newItem = Item(context: self.context)
+                    guard let field = textField.text, !field.isEmpty else {
+                    return
+                }
+                    newItem.title = field
                     self.itemArray[indexPath.row] = newItem
+                    save()
+                    loadItems()
                     self.tableView.reloadData()
+                    
+                    
                 }
                 
             let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -130,10 +115,11 @@ class ViewController: UITableViewController, UISearchBarDelegate {
                     self.present(alert, animated: true, completion: nil)
                 }
                     edit.backgroundColor = .systemMint
-            let delete = UIContextualAction(style: .destructive, title: "Delete") {
+           let delete = UIContextualAction(style: .destructive, title: "Delete") { [self]
                         _, _, _ in
-                    self.itemArray.remove(at: indexPath.row)
-//                    self.defaults.set(self.itemArray, forKey: "ToDoListArray")
+                    self.context.delete(self.itemArray[indexPath.row])
+                    save()
+                    loadItems()
                     self.tableView.reloadData()
                 }
             
@@ -141,16 +127,24 @@ class ViewController: UITableViewController, UISearchBarDelegate {
                     return swipeCofiguration
             }
     
-//    func loadItems() {
-//        if let data = try? Data(contentsOf: dataFilePath!) {
-//            let decoder = PropertyListDecoder()
-//            do {
-//
-//        } catch {
-//            print("Error Decoding Item Array \(error)")
-//        }
-//      }
-//    }
+    func save() {
+        do {
+                try self.context.save()
+            } catch {
+                print("Error \(error)")
+            }
+            
+            self.tableView.reloadData()
+    }
+    
+    func loadItems() {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+        itemArray =  try context.fetch(request)
+        } catch {
+            print("Error Fecting Data \(error)")
+        }
+    }
 }
 
     
