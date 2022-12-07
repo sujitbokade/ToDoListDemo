@@ -7,7 +7,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--ToDoList-->
+        <!--Items-->
         <scene sceneID="TtI-f7-M8h">
             <objects>
                 <tableViewController id="mHL-jy-Zfs" customClass="ViewController" customModule="ToDoListDemo" customModuleProvider="target" sceneMemberID="viewController">
@@ -17,7 +17,7 @@
                         <color key="backgroundColor" systemColor="systemGray5Color"/>
                         <color key="tintColor" systemColor="systemGray5Color"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ToDoItemCell" id="xdD-VF-OPC">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="xdD-VF-OPC" customClass="SwipeTableViewCell" customModule="SwipeCellKit">
                                 <rect key="frame" x="0.0" y="50" width="393" height="42"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xdD-VF-OPC" id="iZP-sb-GyA">
@@ -32,7 +32,7 @@
                             <outlet property="delegate" destination="mHL-jy-Zfs" id="JZf-MK-6rn"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="ToDoList" id="TNA-A3-XfQ">
+                    <navigationItem key="navigationItem" title="Items" id="TNA-A3-XfQ">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="6OV-YR-j3j">
                             <color key="tintColor" systemColor="labelColor"/>
                             <connections>
@@ -43,7 +43,45 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V5m-bH-yPT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11" y="-227"/>
+            <point key="canvasLocation" x="940" y="-227"/>
+        </scene>
+        <!--Category-->
+        <scene sceneID="cjX-g2-cyc">
+            <objects>
+                <tableViewController id="72M-eb-zqe" customClass="CategoryViewController" customModule="ToDoListDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="PaU-32-hXQ">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="Q4Z-ES-i30" customClass="SwipeTableViewCell" customModule="SwipeCellKit">
+                                <rect key="frame" x="0.0" y="50" width="393" height="43.666667938232422"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Q4Z-ES-i30" id="jVc-eb-RCo">
+                                    <rect key="frame" x="0.0" y="0.0" width="393" height="43.666667938232422"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="72M-eb-zqe" id="8WO-bs-hYp"/>
+                            <outlet property="delegate" destination="72M-eb-zqe" id="PEJ-Kj-Mdm"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Category" id="u7c-hc-hey">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Ld1-lA-fzZ">
+                            <connections>
+                                <action selector="AddButtonPressed:" destination="72M-eb-zqe" id="VAt-pj-Vya"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="mHL-jy-Zfs" kind="show" identifier="GoToItem" id="UVk-tP-CCF"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="a9g-Hl-Cve" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="89" y="-227"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="qCe-w1-Zts">
@@ -65,7 +103,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="mHL-jy-Zfs" kind="relationship" relationship="rootViewController" id="TJz-bZ-WsM"/>
+                        <segue destination="72M-eb-zqe" kind="relationship" relationship="rootViewController" id="S5m-Lk-qhQ"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wb1-Hp-S1w" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -76,6 +114,9 @@
     <resources>
         <systemColor name="labelColor">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
             <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

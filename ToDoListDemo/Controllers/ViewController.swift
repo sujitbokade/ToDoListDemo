@@ -6,46 +6,58 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
-class ViewController: UITableViewController {
+class ViewController: SwipeTableViewController {
     
-    var itemArray = [Item]()
+    var todoItems: Results<Item>?
+    let realm = try! Realm()
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        
+    var selectedCategory: Category? {
+        didSet{
+            loadItems()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-
-        loadItems()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return itemArray.count
+            return todoItems?.count ?? 1
         }
    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
-        let item = itemArray[indexPath.row]
+        if  let item = todoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
-        
-            cell.accessoryType = item.done == true ? .checkmark : .none
-                return cell
+            
+            cell.accessoryType = item.done ? .checkmark : .none
+        } else {
+            cell.textLabel?.text = "No Items Added"
         }
+        
+        return cell
+    }
+    
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
-
-            itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-            save()
-            tableView.reloadData()
         
-            tableView.deselectRow(at: indexPath, animated: true)
+        if let item = todoItems?[indexPath.row] {
+            do {
+                try realm.write {
+                    item.done = !item.done
+                }
+            } catch {
+                print("Error Saving done Status \(error)")
+            }
         }
-   
-   
+            tableView.reloadData()
+            tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     @IBAction func addItoms(_ sender: UIBarButtonItem) {
             var textField = UITextField()
         
@@ -55,13 +67,18 @@ class ViewController: UITableViewController {
             let add = UIAlertAction(title: "Add", style: .default) { [self]
                     (action) in
            
-                let newItem = Item(context: self.context)
-                newItem.done = false
-                newItem.title = textField.text!
-                self.itemArray.append(newItem)
-                save()
+                if let currentCategory = self.selectedCategory {
+                    do {
+                        try realm.write {
+                            let newItem = Item()
+                            newItem.title = textField.text!
+                            currentCategory.items.append(newItem)
+                        }
+                    } catch {
+                        print("Error Saving New Item \(error)")
+                    }
+                }
                 self.tableView.reloadData()
-                
            }
         
             let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -78,71 +95,23 @@ class ViewController: UITableViewController {
         }
     
     
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-            
-            let edit = UIContextualAction(style: .normal, title: "Update") {
-                _, _, _ in
-            var textField = UITextField()
-                
-                let alert = UIAlertController(title: "Update Itom", message: "", preferredStyle: .alert)
-                
-                let update = UIAlertAction(title: "Update", style: .default){ [self]
-                    (action) in
-                    let newItem = Item(context: self.context)
-                    guard let field = textField.text, !field.isEmpty else {
-                    return
-                }
-                    newItem.title = field
-                    self.itemArray[indexPath.row] = newItem
-                    save()
-                    loadItems()
-                    self.tableView.reloadData()
-                    
-                    
-                }
-                
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-                
-                    alert.addTextField { (alertTextField) in
-                        alertTextField.placeholder = self.itemArray[indexPath.row].title
-                    textField = alertTextField
-                    
-                }
-                
-                    alert.addAction(update)
-                    alert.addAction(cancel)
-                
-                    self.present(alert, animated: true, completion: nil)
-                }
-                    edit.backgroundColor = .systemMint
-           let delete = UIContextualAction(style: .destructive, title: "Delete") { [self]
-                        _, _, _ in
-                    self.context.delete(self.itemArray[indexPath.row])
-                    save()
-                    loadItems()
-                    self.tableView.reloadData()
-                }
-            
-            let swipeCofiguration = UISwipeActionsConfiguration(actions: [delete, edit])
-                    return swipeCofiguration
-            }
-    
-    func save() {
-        do {
-                try self.context.save()
-            } catch {
-                print("Error \(error)")
-            }
-            
-            self.tableView.reloadData()
+  func loadItems() {
+        todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+      
+        tableView.reloadData()
+     
     }
     
-    func loadItems() {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
-        do {
-        itemArray =  try context.fetch(request)
-        } catch {
-            print("Error Fecting Data \(error)")
+    override func updateModel(at indexPath: IndexPath) {
+        if let item = todoItems?[indexPath.row] {
+            do {
+                try realm.write {
+                    realm.delete(item)
+                }
+            } catch {
+                print("Error Saving Status \(error)")
+            }
+            
         }
     }
 }
